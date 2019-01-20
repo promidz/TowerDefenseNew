@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class WaveSpawner : MonoBehaviour {
 
+    public bool onDialog;
 
     public static int EnemiesAlive = 0;
 
@@ -20,7 +21,7 @@ public class WaveSpawner : MonoBehaviour {
 
     private int waveIndex=0;
     void Update (){
-
+        Debug.Log(EnemiesAlive);
         if(EnemiesAlive > 0)
         {
             return;
@@ -31,7 +32,7 @@ public class WaveSpawner : MonoBehaviour {
             this.enabled = false;
         }
 
-        if (countdown <= 0f)
+        if (countdown <= 0f && onDialog==false)
         {
             //this is how to call Coroutine(Ienumerator)
             StartCoroutine(SpawnWave());
@@ -40,7 +41,10 @@ public class WaveSpawner : MonoBehaviour {
             return;
         }
         //reduce countdown by 1 every second
-        countdown -= Time.deltaTime;
+        if (onDialog == false)
+        {
+            countdown -= Time.deltaTime;
+        }
 
         countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
         ///set the UI Text to equal to countdown
@@ -71,6 +75,15 @@ public class WaveSpawner : MonoBehaviour {
     void SpawnEnemy(GameObject enemy)
     {
         Instantiate(enemy,spawnPoint.position,spawnPoint.rotation);
+
+    }
+    public int getEnemiesAlive() {
+
+        return EnemiesAlive;
+    }
+    public void setEnemiesAlive(int enemiesAlive) {
+
+        EnemiesAlive = enemiesAlive;
 
     }
 }

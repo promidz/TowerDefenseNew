@@ -2,43 +2,91 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Bosses : MonoBehaviour {
+public abstract class Bosses : MonoBehaviour {
+
+    public bool onDialog;
     [SerializeField]
-    private float timeBetweenChange=2;
+    protected float timeBetweenChange=2;
     [SerializeField]
-    private float cooldown=8f;
+    protected float cooldown=8f;
     [SerializeField]
-    Text changeCooldown;
+    protected Text changeCooldown;
 
     [SerializeField]
-    Image bossImage;
+    protected Image bossImage;
 
     [SerializeField]
-    Sprite[] bossSprite;
+    protected Sprite[] bossSprite;
 
-    private void Start()
-    {
-        bossImage.sprite = bossSprite[0];
+    protected bool isEvolved = false;
+    [SerializeField]
+    protected Transform spawnPoint;
+
+    [SerializeField]
+    protected GameObject specialEnemy;
+
+    [SerializeField]
+    protected int specialEnemyCount;
+
+    [SerializeField]
+    protected float spawnDelay;
+
+    [SerializeField]
+    WaveSpawner wavespawner;
+
+    [SerializeField]
+    protected int timeCanEvolve;
+
+    //private void Start()
+    //{
+    //    bossImage.sprite = bossSprite[0];
         
-    }
+    //}
 
-    private void Update()
-    {
-        cooldown -= Time.deltaTime;
-        cooldown = Mathf.Clamp(cooldown, 0f, Mathf.Infinity);
-        changeCooldown.text = "DANGER: "+string.Format("{0:00.00}", cooldown);
+    //private void Update()
+    //{
+    //    cooldown -= Time.deltaTime;
+    //    cooldown = Mathf.Clamp(cooldown, 0f, Mathf.Infinity);
+    //    changeCooldown.text = "DANGER: "+string.Format("{0:00.00}", cooldown);
 
-        if(cooldown <= 0)
-        {
-            ChangeImage();
+    //    if(cooldown <= 0)
+    //    {
+    //        ChangeImage();
 
-        }
-    }
+    //    }
+    //}
     public void ChangeImage() {
 
         bossImage.sprite = bossSprite[1];
+        
 
     }
-    IEnumerator 
+
+    public void AlwaysOnUpdate() {
+        if (onDialog == false)
+        {
+            cooldown -= Time.deltaTime;
+            cooldown = Mathf.Clamp(cooldown, 0f, Mathf.Infinity);
+            changeCooldown.text = "DANGER: " + string.Format("{0:00.00}", cooldown);
+        }
+    }
+    public abstract void IfItsTimeToEvolve();
+    protected IEnumerator SpawnSpecialEnemy(GameObject specialEnemy)
+    {
+        for (int i = 0; i < specialEnemyCount; i++)
+        {
+            Debug.Log(specialEnemyCount);
+            Instantiate(specialEnemy, spawnPoint.position, spawnPoint.rotation);
+            yield return new WaitForSeconds(spawnDelay);
+            Debug.Log(i);
+        }
+        //emiesAlive += specialEnemyCount;
+        isEvolved = false;
+        cooldown = timeBetweenChange;
+        wavespawner.setEnemiesAlive(wavespawner.getEnemiesAlive() + specialEnemyCount);
+        timeCanEvolve--;
+
+    }
+
 
 }
